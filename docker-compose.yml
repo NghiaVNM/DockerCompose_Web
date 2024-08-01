@@ -1,0 +1,57 @@
+version: '3.8'
+
+services:
+  mongo:
+    image: mongo:latest
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo-data:/data/db
+      - ./mongo-seed:/docker-entrypoint-initdb.d
+
+  web-node:
+    build: ./web-node
+    ports: 
+      - "3000:3000"
+    volumes:
+      - ./web-node:/app
+    environment:
+      - NODE_ENV=development
+    depends_on:
+      - mongo
+
+  web-python:
+    build: ./web-python
+    ports:
+      - "3001:3001"
+    volumes:
+      - ./web-python:/app
+    environment:
+      - FLASK_ENV=development
+    depends_on:
+      - mongo
+
+  web-golang:
+    build: ./web-golang
+    ports:
+      - "3002:3002"
+    volumes:
+      - .:/app
+    environment:
+      - GO_ENV=development
+    depends_on:
+      - mongo
+
+  web-java:
+    build: ./web-java
+    ports:
+      - "3003:3003"
+    volumes:
+      - ./web-java:/app
+    environment:
+      - SPRING_PROFILES_ACTIVE=development
+    depends_on:
+      - mongo
+
+volumes:
+  mongo-data:
